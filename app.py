@@ -10,10 +10,11 @@ from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'SaolosYolo.1aloyda'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ideas.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'SaolosYolo.1aloyda') # Usar variable de entorno
+# Usar variable de entorno para la URI de la base de datos
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///ideas.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['UPLOAD_FOLDER'] = 'static/uploads' # Esto aún es local, ver Paso 5 para solución
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -28,7 +29,7 @@ def load_user(user_id):
 
 with app.app_context():
     db.create_all()
-
+    
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
